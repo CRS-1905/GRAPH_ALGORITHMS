@@ -1,145 +1,127 @@
 #include<stdio.h>
 #include<stdlib.h>
-#include<math.h>
 
-struct node
-{
-	int a;
-	int b;
-	struct node *next;
-};
-typedef struct node edge;
-edge *s;
-int **a,n,*visit;
-
-struct node1
+struct node 
 {
 	int data;
-	struct node1 *next;
+	struct node *next;
 };
-typedef struct node1 stack;
-stack *r;
+struct node **s,*s1;
+int *visit,*p;
 
 void insert(int i,int j)
 {
-	edge *new;
-	new=(edge *)malloc(sizeof(edge));
-	new->a=i;
-	new->b=j;
+	struct node *new,*q;
+	new=(struct node *)malloc(sizeof(struct node));
+	new->data=j;
 	new->next=NULL;
-	if(s==NULL)
-		s=new;
+	if(s[i]==NULL)
+		s[i]=new;
 	else
 	{
-		new->next=s;
-		s=new;
+		new->next=s[i];
+		s[i]=new;
 	}
 }
 
-void push(int j)
+void push(int i)
 {
-	stack *new,*q;
-	new=(stack *)malloc(sizeof(stack));
-	new->data=j;
+	struct node *new,*q;
+	new=(struct node *)malloc(sizeof(struct node));
+	new->data=i;
 	new->next=NULL;
-	if(r==NULL)
-		r=new;
+	if(s1==NULL)
+		s1=new;
 	else
 	{
-		q=r;
-		while(q->next!=NULL)
+		q=s1;
+		while(q->next=NULL)
 			q=q->next;
 		q->next=new;
-	}
-}
-void delete(int k,int j)
-{
-	edge *q1,*q;
-	q=s;
-	q1=q->next;
-	if(q->a==k && q->b==j)
-		s=s->next;
-	else
-	{
-		while(q1->a!=k || q1->b!=j)
-		{
-			q=q->next;
-			q1=q1->next;
-		}
-		q->next=q1->next;
 	}
 }
 
 int pop()
 {
-	int k;
-	k=r->data;
-	r=r->next;
-	return k;
+	int p=s1->data;
+	s1=s1->next;
+	return p;
 }
 
-void BST()
+int BFS()
 {
-	int k,j;
-	while(r!=NULL)
+	int k,r,e;
+	struct node *q;
+	while(s1!=NULL)
 	{
 		k=pop();
-		visit[k]=2;
-		for(j=0;j<n;j++)
+		visit[k]=1;
+		q=s[k];
+		while(q!=NULL)
 		{
-			if(a[k][j]==1 && visit[j]==0)
+			r=q->data;
+			if(visit[r]==0)
 			{
-				push(j);
-				visit[j]=1;
-				delete(k,j);
-				delete(j,k);
+				push(r);
+				p[r]=k;
+				visit[r]=1;
 			}
+			else
+				if(visit[r]==2 && p[k]!=r)
+				{
+					e=0;
+					return e;
+				}
+				else
+					q=q->next;
 		}
+		visit[k]=2;
 	}
+	return 1;
+	
 }
-
 int main()
 {
-	int i,j,k,s1;
-	double **w;
-	edge *q;
-	printf("Enter The Number Of Vertices :\t");
+	int n,**a,i,j,t,k,p1;
+	struct node *q;
+	printf("Enter The NNumber Of Nodes :\t");
 	scanf("%d",&n);
-	a=(int **)malloc(n*sizeof(int *));
+	printf("Enter The Adjacency Matrix :\n");
+	a=(int **)malloc(n*sizeof(int*));
 	for(i=0;i<n;i++)
 		a[i]=(int *)malloc(n*sizeof(int));
-	visit=(int *)malloc(n*sizeof(int));
-	printf("Enter The Adjacency Matrix:\n");
 	for(i=0;i<n;i++)
 		for(j=0;j<n;j++)
 			scanf("%d",&a[i][j]);
-	s=NULL;
+	s=(struct node **)malloc(n*sizeof(struct node *));
+	for(i=0;i<n;i++)
+		s[i]=NULL;
+
 	for(i=0;i<n;i++)
 		for(j=0;j<n;j++)
-			if(a[i][j]==1)	
+			if(a[i][j]==1)
 				insert(i,j);
+
+	visit=(int *)malloc(n*sizeof(int));
 	for(i=0;i<n;i++)
 		visit[i]=0;
-	k=0;
-	s1=1;
-	while(s1!=0)
+	p=(int *)malloc(n*sizeof(int));
+	for(i=0;i<n;i++)
+		p[i]=-1;
+	for(i=0;i<n;i++)
 	{
-		s1=0;
-		push(k);
-		visit[0]=1;
-		BST();
-		for(j=0;j<n;j++)
+		push(i);
+		p1=BFS();
+		if(p1==0)
+			break;
+		else
 		{
-			if(visit[j]!=2)
-			{
-				k=j;
-				s1=1;
-				break;
-			}	
+			for(j=0;j<n;j++)
+				visit[j]=0;
 		}
 	}
-	if(s!=NULL)
-		printf("The Graph Contains A Cycle \n");
+	if(i==n)
+		printf("The Graph Does Not Contain Any Cycle\n");
 	else
-		printf("The Graph Does Not Contain Any Cycle \n");
+		printf("The Graph Contain A Cycle\n");
 }
